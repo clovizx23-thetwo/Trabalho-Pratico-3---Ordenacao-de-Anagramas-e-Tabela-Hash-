@@ -3,6 +3,9 @@
 
 #include "lista.h"
 #include <stdlib.h>
+#include <stdbool.h>
+
+#define TAM_PESOS 5
 
 //cada subLista é uma EntradaHash, com a chave e a lista e palavras
 typedef struct {
@@ -14,6 +17,7 @@ typedef struct{
     EntradaHASH *listaDeAnagramas;
     int capacidadeTotal;
     int quantidade;
+    int pesos[TAM_PESOS];
 } TabelaHASH;
 
 int HashInicializar(TabelaHASH *hTabela, int capacidadeIncicial);
