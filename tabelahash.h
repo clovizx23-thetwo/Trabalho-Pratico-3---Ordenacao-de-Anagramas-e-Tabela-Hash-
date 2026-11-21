@@ -2,6 +2,7 @@
 #define TABELAHASH_H
 
 #include "lista.h"
+#include <stdlib.h>
 
 //cada subLista é uma EntradaHash, com a chave e a lista e palavras
 typedef struct {
