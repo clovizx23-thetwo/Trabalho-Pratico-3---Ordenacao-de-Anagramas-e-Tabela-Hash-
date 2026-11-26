@@ -2,19 +2,18 @@
 #define TABELAHASH_H
 
 #include "lista.h"
-#include <stdlib.h>
-#include <stdbool.h>
 
 #define TAM_PESOS 5
 
 //cada subLista é uma EntradaHash, com a chave e a lista e palavras
 typedef struct {
-    char *chave;
-    Lista palavrasLista;
+    char *chave;// chave de identificação (ordenada)
+    Lista *palavrasLista;// lista das palavras
 } EntradaHASH;
 
 typedef struct{
-    EntradaHASH *listaDeAnagramas;
+    //não é vetor de ponteiros, é vetor de ENTRADAS
+    EntradaHASH *listaDeAnagramas;// meu vetor de EntradaHASH (listas e chaves) que aponta para as Listas
     int capacidadeTotal;
     int quantidade;
     int pesos[TAM_PESOS];
