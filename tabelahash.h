@@ -10,7 +10,7 @@
 //cada subLista é uma EntradaHash, com a chave e a lista e palavras
 typedef struct {
     char *chave;
-    Lista palavras;
+    Lista palavrasLista;
 } EntradaHASH;
 
 typedef struct{

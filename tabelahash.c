@@ -6,7 +6,7 @@
 int HashInicializar(TabelaHASH *hTabela, int capacidadeIncicial){
     
     if(capacidadeInicial <= 0) return -1;
-    
+
     hTabela->listaDeAnagramas = calloc(capacidadeIncicial, sizeof(EntradaHash*));
     //vetor de EntradaHASH's, com chaves
     /*só os ponteiros *chave vão começar NULL, usando calloc fica melhor
@@ -49,27 +49,52 @@ int StringEmChaveTransformers(TabelaHASH *hTabela, char *palavraChave){
     return soma % hTabela->capacidadeTotal;
 }
 
+//função que tá no slide do professor
 int HashPesquisa(TabelaHash *hTabela, char *palavraChave, int *achou){
     if(!hTabela || !palavraChave) return -1;
     if(!hTabela->listaDeAnagramas) return -1;
 
+    int index = 0;
+    int posicaoCalculada;
+    int inicio = StringEmChaveTransformers(hTabela, palavraChave);
+    //transforma a string em chave na busca
 
+    while(index < hTabela->capacidadeTotal){
+        
+        posicaoCalculada = (inicio + index) % hTabela->capacidadeTotal;
+
+        //se achou uma posição vazia
+        if(hTabela->listaDeAnagramas[posicaoCalculada].chave == NULL)
+            return posicao;//para quando não existe uma lista do tipo correspondente ao anagrama
+        
+        //se a as strings forem IGUAIS strcmp == 0
+        if(strcmp(hTabela->listaDeAnagramas[posicaoCalculada].chave, palavraChave) == 0){
+            *achou = 1;//para uma lista já existente
+            return posicao;
+        }
+        //caso de colisão continua a verificação com a próxima posição
+        index++;
+    }
+
+    //se a tabela tá cheia
+    return -1;
 }
+
 /*
 Entrada vazia: *chave == NULL
 apenas 1 condição para representar posição livre na tabela.
 */
 int HashInserir(TabelaHASH *hTabela, char *palavraChave, char *palavraNova){
+
     if(!hTabela || !palavraChave || !palavraNova) return -1;
 
-    int achouChave = 0;//1 se achou
+    int achouNaExistente = 0;// 1 se achou
     int posicaoNaHash;
     int resultado;//int ou bool, tanto faz, confirma se inseiru ou nao
 
-    //busca diretamente na tabela o indice da lista
-    EntradaHash *entradaH;
+    EntradaHash *entradaH;//comunicador entre o TAD da Tabela Hash e o TAD lista
 
-    posicaoNaHash = HashPesquisa(hTabela, palavraChave, &achouChave);
+    posicaoNaHash = HashPesquisa(hTabela, palavraChave, &achouNaExistente);
     //recebe o indice onde achou e se achou
 
     if(posicaoNaHash == -1)
@@ -79,12 +104,37 @@ int HashInserir(TabelaHASH *hTabela, char *palavraChave, char *palavraNova){
     //passa o indice(endereço) da tabela hash onde a tabela de anagramas encontrada está
 
     //Situação 1 - se a chave existe e foi encontarda, já insere na lista corresp.
-    if(achouChave == 1){
-        reultado = //funcao da Lista para inserir a palavra na lista de anagramas;
+    if(achouNaExistente == 1){
+        resultado = listaInserirUnica(&entradaH->palavrasLista, palavraChave);//funcao da Lista para inserir a palavra na lista de anagramas
+        //'&entradaH->palavrasLista' é do tipo 'Lista' - então usa ela pra comunicação entre o TAD Lista
         
         if(resultado == 1)//1 se bem sucedido
             return resultado;
     }
+    else {//Situação 2 - se a chave AINDA NÃO EXISTE e preciso inserir
+    //se não tem alguma existente e tiver uma posição livre na tabela para inserir
+        EntradaHASH *novaChave = malloc(sizeof(strlen(palavraChave)) + 1);//+1 para o '/0'
+
+        if(!novaChave) return -1;
+
+        //passa a nova palavra para a chave da nova lista que vai ser criada
+        strcpy(novaChave, palavraChave);
+
+        listaInicializar(&novaChave->palavrasLista);
+
+        resultado = listaInserirUnica(&entradaH->palavrasLista, palavraChave);//funcao da Lista para inserir a palavra na lista de anagramas
+        
+        if(resultado == -1){//se deu ruim lebera tudo e finaliza
+            listaLiberar(&novaChave->palavrasLista);
+            free(novaChave);
+            return -1;
+        }
+
+        entradaH->chave = novaChave;//passa a novaChave já atualizada pra chave da NOVA LISTA
+        hTabela->quantidade++;
+    }
+
+    return -1;
 }
 
 void HashImprimeNaOrdem(TabelaHASH *hTabela){
