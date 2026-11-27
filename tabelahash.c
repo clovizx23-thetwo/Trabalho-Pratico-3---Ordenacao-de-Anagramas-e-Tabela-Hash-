@@ -43,7 +43,7 @@ int HashInicializar(TabelaHASH *hTabela, int capacidadeInicial){
     return 1;// deu bom
 }
 
-//as letras devem ser ORDENADAS (Counting) antes de chamar esta função aqui
+//as letras devem ser ORDENADAS antes de chamar esta função aqui
 int StringEmChaveTransformers(TabelaHASH *hTabela, char *palavraChave){
     unsigned int soma = 0;//no código do professor Pedro (soma sempre positiva)
     int tamanhoString = strlen(palavraChave);
@@ -152,7 +152,7 @@ int HashInserir(TabelaHASH *hTabela, char *palavraChave, char *palavraNova){
         //funcao da Lista para inserir a PALAVRA NOVA na lista de anagramas
         resultado = listaInserirUnica(entradaH->palavrasLista, palavraChave);
         
-        //se deu ruim lebera tudo e finaliza
+        //se deu ruim (resultado = -1) lebera tudo e finaliza
         if(resultado == -1){
             listaLiberar(novaChave->palavrasLista);
             free(novaChave);
@@ -175,4 +175,14 @@ void HashImprimeNaOrdem(TabelaHASH *hTabela){
 
 void HashLiberar(TabelaHASH *hTabela){
     
+    if(!hTabela) return;
+
+    for(int i = 0; i < hTabela->capacidadeTotal; i++){
+        if(hTabela->listaDeAnagramas[i]->chave != NULL){
+            free(hTabela->listaDeAnagramas[i]->chave);
+            ListaLiberar(hTabela->listaDeAnagramas[i]->palavrasLista);
+        }
+    }
+
+    hTabela = NULL;
 }
